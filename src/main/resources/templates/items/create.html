@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header.html :: head" />
+<body>
+<div th:replace="fragments/header.html :: header ('')"/>
+<div class="row">
+    <form class="offset-4 col-4 form-group item-form" th:method="post" th:action="@{/items/create}" th:object="${itemJoinRequest}" align="left" enctype="multipart/form-data">
+        <h3 align="center" style="color:#5F4E3A">상품등록</h3>
+        <div>
+            <label th:for="name">상품명</label><br/>
+            <input type="text" th:field="*{name}" placeholder="상품명을 입력해주세요.(최대 10자)"
+                   th:errorclass="error-input"/>
+            <div th:class="error-div" th:errors="*{name}"/>
+        </div>
+        <br/>
+        <div>
+            <label th:for="price">가격</label><br/>
+            <input type="text" th:field="*{price}" placeholder="가격을 입력해주세요."
+                   th:errorclass="error-input"/>
+            <div th:class="error-div" th:errors="*{price}"/>
+        </div>
+        <br/>
+        <div>
+            <label th:for="delivery_price">배송비</label><br/>
+            <input type="text" th:field="*{delivery_price}" placeholder="배송비를 입력해주세요."
+                   th:errorclass="error-input"/>
+            <div th:class="error-div" th:errors="*{delivery_price}"/>
+        </div>
+        <br/>
+        <div>
+            <!-- CAKE, TARTE , MADELEINE, FINANCIER, MACARON, SCONE, MUFFIN-->
+            <label th:for="itemCategory">상품 카테고리</label><br/>
+            <select th:field="*{itemCategory}" style="height: 40px;">
+                <option th:value="CAKE">케이크</option>
+                <option th:value="TARTE">타르트</option>
+                <option th:value="MADELEINE">마들렌</option>
+                <option th:value="FINANCIER">휘낭시에</option>
+                <option th:value="MACARON">마카롱</option>
+                <option th:value="SCONE">스콘</option>
+                <option th:value="MUFFIN">머핀</option>
+            </select>
+        </div>
+        <br/>
+        <div>
+            <label th:for="stock">재고</label><br/>
+            <input type="text" th:field="*{stock}" placeholder="재고수량을 입력해주세요."
+                   th:errorclass="error-input"/>
+            <div th:class="error-div" th:errors="*{stock}"/>
+        </div>
+        <br/>
+        <div>
+            <label th:for="itemTip">상품설명</label><br/>
+            <textarea rows="10" cols="50" th:field="*{itemTip}" placeholder="상품에 대한 설명 입력란입니다."
+                      th:errorclass="error-input"></textarea>
+            <div th:class="error-div" th:errors="*{itemTip}"/>
+        </div>
+        <br/>
+        <div>
+            <label th:for="sizeTip">크기설명</label><br/>
+            <input type="text" th:field="*{sizeTip}" placeholder="상품 크기에 대한 설명 입력란입니다."
+                   th:errorclass="error-input"/>
+            <div th:class="error-div" th:errors="*{sizeTip}"/>
+        </div>
+        <br/>
+        <div>
+            <label th:for="uploadImages">이미지 첨부 : </label><br/>
+            <input type="file" id="imageInput" th:field="*{uploadImages}" style="width: 50%" multiple>
+            <div th:class="error-div" th:errors="*{uploadImages}"/>
+            <div id="imageList"></div>
+        </div>
+        <br/>
+        <div id="imageUploadContainer"></div>
+        <div align="center">
+            <button id="submitButton" class="btn item-btn" type="submit">등록</button>
+        </div>
+    </form>
+</div>
+<script>
+    // 이미지를 선택하면 호출되는 함수
+    function handleImageUpload(event) {
+        const files = event.target.files;
+        const imageList = document.getElementById('imageList');
+
+        // 선택한 이미지들의 URL을 화면에 표시
+        for (const file of files) {
+            const imageURL = URL.createObjectURL(file);
+            const imageElement = document.createElement('img');
+            imageElement.src = imageURL;
+            imageElement.style.maxWidth = '200px';
+            imageElement.style.maxHeight = '200px';
+            imageElement.style.marginRight = '10px';
+
+            // 삭제 버튼 추가
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = '삭제';
+            deleteButton.addEventListener('click', () => {
+                // 이미지와 삭제 버튼을 감싸는 div 요소 삭제
+                const imageContainer = deleteButton.parentNode;
+                imageContainer.remove();
+                // URL 해제
+                URL.revokeObjectURL(imageURL);
+            });
+
+            // 이미지와 삭제 버튼을 화면에 추가
+            const imageContainer = document.createElement('div');
+            imageContainer.appendChild(imageElement);
+            imageContainer.appendChild(deleteButton);
+            imageList.appendChild(imageContainer);
+        }
+    }
+
+    // 파일 선택 input에 이벤트 리스너 추가
+    const fileInput = document.getElementById('imageInput');
+    fileInput.addEventListener('change', handleImageUpload);
+
+    // 등록 버튼에 이벤트 리스너 추가
+    const submitButton = document.getElementById('submitButton');
+    submitButton.addEventListener('click', () => {
+        // Form 데이터를 FormData 객체로 만듦
+        const formData = new FormData();
+        const images = fileInput.files;
+        for (const image of images) {
+            formData.append('uploadImages', image);
+        }
+
+        // FormData 객체를 서버로 전송
+        fetch('/items/create', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            // 응답 처리
+            console.log(response);
+            // 필요하다면 추가적인 로직을 구현할 수 있습니다.
+        })
+        .catch(error => {
+            // 오류 처리
+            console.error('Error:', error);
+        });
+    });
+
+</script>
+</body>

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header.html :: head"/>
+
+<body>
+<div th:replace="fragments/header.html :: header ('')" style="background-color:white;"/>
+
+<div th:replace="fragments/myPageHeader.html :: myPageHeader ('myOrder')"/>
+<h2>주문내역</h2>
+<div class="row">
+    <table style="width:80%; margin:auto">
+        <thead>
+        <tr>
+            <th class="order-id-col">주문 ID</th>
+            <th>주문 일자</th>
+            <th>주문 상태</th>
+            <th>배송 상태</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- 각 주문에 대한 정보를 반복적으로 표시 -->
+        <tr th:each="orderHistDto : ${orderHistDtoList}">
+            <td th:text="${orderHistDto.orderId}" th:onclick="|location.href='@{/orders/{orderId}/detail (orderId=${orderHistDto.orderId})}'|" class="order-id-col" id="order-id"></td>
+            <td th:text="${#temporals.format(orderHistDto.orderDate, 'yy/MM/dd HH:mm')}"></td>
+            <td th:text="${orderHistDto.orderStatus}"></td>
+            <td th:text="${orderHistDto.deliveryStatus}"></td>
+            <td th:if="${orderHistDto.orderStatus.name=='ORDER'}" >
+                <form th:action="@{/orders/{orderId}/cancel(orderId=${orderHistDto.orderId})}" method="post">
+                    <button type="submit" id="order-cancel">취소</button>
+                </form>
+            </td>
+            <td th:unless="${orderHistDto.orderStatus.name=='ORDER'}">
+                취소완료
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<br/>
+<br/>
+<ul id="paging-ul" class="pagination justify-content-center"></ul>
+
+<script th:inline="javascript">
+    window.onload = function () {
+        let nowPage = [[${orderHistDtoList.getNumber()}]] + 1;    // 현재 페이지
+        let totalPage = [[${orderHistDtoList.getTotalPages()}]];  // 전체 페이지 수
+
+        let firstPage;  // 화면에 출력될 첫 페이지
+        for (let i = nowPage ; i >= 1 ; i --) {
+            if(i % 5 == 1) {
+                firstPage = i;
+                break;
+            }
+        }
+
+        let lastPage;   // 화면에 출력될 마지막 페이지
+        let nextButton; // 다음 버튼 출력 여부
+        if (firstPage + 4 >= totalPage) {
+            lastPage = totalPage;
+            nextButton = false;
+        } else {
+            lastPage = firstPage + 4;
+            nextButton = true;
+        }
+
+        // HTML 생성
+        let pageHtml = "";
+        pageHtml += "<li><a class='page-link' href='" + makeUrl(1) +  "'>&laquo;</a></li>";
+        if (firstPage != 1) {
+            pageHtml += "<li><a class='page-link' href='" + makeUrl(firstPage - 1) +  "'>&lsaquo;</a></li>";
+        }
+
+        for (let i = firstPage; i <= lastPage; i++) {
+            if (i == nowPage) {
+                pageHtml += "<li class='page-item active'><a class= 'page-link'>" + i + "</a></li>";
+            } else {
+                pageHtml += "<li class='page-item'><a class= 'page-link' href='" + makeUrl(i) + "'>" + i + "</a></li>";
+            }
+        }
+
+        if (nextButton) {
+            pageHtml += "<li><a class='page-link' href='" + makeUrl(lastPage + 1) +  "'>&rsaquo;</a></li>";
+        }
+        pageHtml += "<li><a class='page-link' href='" + makeUrl(totalPage) +  "'>&raquo;</a></li>";
+
+        $("#paging-ul").html(pageHtml);
+    }
+
+    function makeUrl(page) {
+        let url = "/members/myPage/order/" + "?page=" + page;
+
+
+        return url;
+    }
+</script>
+</body>

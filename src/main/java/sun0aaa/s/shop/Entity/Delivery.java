@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -18,7 +20,7 @@ public class Delivery {
     @OneToOne(fetch = FetchType.LAZY,mappedBy ="delivery")
     private Member member; //회원
 
-    @OneToOne(fetch = FetchType.LAZY,mappedBy = "delivery")
+    @OneToOne(mappedBy = "delivery",fetch = FetchType.LAZY)
     private Order order; //주문
 
     private String deliveryName; //배송지명
@@ -27,7 +29,9 @@ public class Delivery {
     @Embedded
     private Address address; //배송주소
 
-    private Integer phoneNumber; //핸드폰 번호
+    private String phoneNumber; //핸드폰 번호
+
+
 
 
 

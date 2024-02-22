@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="fragments/header.html :: head" />
+<body>
+<div th:replace="fragments/header.html :: header (${''})"/>
+<div th:replace="fragments/itemDetailHeader.html"/>
+<br/>
+    <div class="row" th:object="${itemDto}">
+        <div id="item-tip">
+            <label th:for="itemTip" style="font-size: large">상세정보</label><br/><br/>
+            <textarea rows="10" cols="15" th:field="*{itemTip}" style="border:none; width:500px; height:150px; text-align: center;" readonly/>
+        </div>
+        <div id="imageContainer">
+            <div th:each="uploadImage : *{uploadImages}">
+                <div class="image-div">
+                    <img th:src="|/items/images/${uploadImage.savedFilename}|" class="upload-image"
+                         width="400px" height="400px" style="border-color:#5F4E3A; border-style: solid; border-width: thin;"/>
+                </div>
+                <br/>
+            </div>
+        </div>
+        <br/>
+
+        <div sec:authorize="hasAuthority('ADMIN')" align="center">
+            <button class="btn edit-btn" onclick="clickEdit()">수정</button>
+            <button class="btn del-btn" onclick="clickDelete()">삭제</button>
+        </div>
+
+
+        <br/><br/>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    function clickEdit() {
+        if (confirm("해당 글을 수정 하시겠습니까?") == true) {
+            location.href = "/items/" + [[${itemDto.id}]] + "/edit";
+        }
+    }
+    function clickDelete() {
+        if (confirm("해당 글을 삭제 하시겠습니까?") == true) {
+            location.href = "/items/" + [[${itemDto.id}]] + "/delete";
+        }
+    }
+
+    function askLogin() {
+        if (confirm("로그인이 필요한 작업입니다.\n로그인 하시겠습니까?") == true) {
+            location.href = "/members/login";
+        }
+    }
+
+
+</script>
+</body>
+</html>

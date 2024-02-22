@@ -28,4 +28,15 @@ public class Review extends BaseEntity{
 
     @OneToOne(fetch = FetchType.LAZY,mappedBy = "review", orphanRemoval = true)
     private UploadImage uploadImage;
+
+    public void saveMemberItem(Member member,Item item){
+        this.member=member;
+        this.item=item;
+        member.getReviews().add(this);
+    }
+
+    public Review setUploadImage(UploadImage uploadImage) {
+        this.uploadImage=uploadImage;
+        return this;
+    }
 }

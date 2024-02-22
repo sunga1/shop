@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import sun0aaa.s.shop.exception.NotEnoughStockException;
 
 @Entity
 @AllArgsConstructor
@@ -23,4 +24,23 @@ public class OrderItem {
 
     private Integer orderPrice; //주문했을때의 상품 가격
     private Integer count; //상품 개수
+
+    public static OrderItem createOrderItem(Item item,int count){
+        System.out.println(item.getId()+" "+count);
+       item.removeStock(count);
+
+        return OrderItem.builder()
+                .item(item)
+                .count(count)
+                .orderPrice(item.getPrice())
+                .build();
+
+    }
+    public int getTotalPrice(){
+        return orderPrice*count;
+    }
+
+    public void setOrder(Order order) {
+        this.order=order;
+    }
 }

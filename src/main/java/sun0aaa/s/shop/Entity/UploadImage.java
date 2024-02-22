@@ -28,4 +28,6 @@ public class UploadImage {
     @OneToOne(fetch = FetchType.LAZY)
     private QnA qna;
 
+    
+
 }

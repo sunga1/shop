@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header.html :: head"/>
+
+<body>
+<div th:replace="fragments/header.html :: header ('')" style="background-color:white;"/>
+
+<div th:replace="fragments/myPageHeader.html :: myPageHeader ('myCart')"/>
+<h2>장바구니</h2><br/>
+<div class="offset-4 col-4" >
+    <hr class="cart-top-hr">
+    <form th:action="@{/orders/createByCart}" method="post">
+        <!-- 각 주문에 대한 정보를 반복적으로 표시 -->
+        <div th:each="cartDto : ${cartDtoList}">
+            <div style="display: flex; align-items: center;">
+                <input type="checkbox" name="selectedCartIds" th:value="${cartDto.id}">
+                <div th:text="${cartDto.itemName}" style="margin-right:30px;"/>
+                <img th:src="|/items/images/${cartDto.itemImage.savedFilename}|" class="upload-image"
+                     width="50px" height="50px" style="margin-right:30px;"/>
+                <input type="text" th:value="${cartDto.count}" style="margin-right:30px;">
+
+                <button type="submit" th:formaction="@{/carts/{cartId}/delete (cartId=${cartDto.id})}" formmethod="post" id="order-cancel">삭제</button>
+            </div>
+            <br/>
+            <hr class="cart-hr"/>
+            <br/>
+        </div>
+
+        <button type="submit">주문하기</button>
+    </form>
+</div>
+<br/>
+</body>

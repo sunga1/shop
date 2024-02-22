@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header.html :: head"/>
+
+<body>
+<div th:replace="fragments/header.html :: header ('')" style="background-color:white;"/>
+
+<div th:replace="fragments/myPageHeader.html :: myPageHeader ('myWishlist')"/>
+<div class="row">
+    <div class="offset-2 col-8">
+        <div class="item-container">
+            <div th:each="wishlistItem: ${wishlists}" class="item"
+                 th:onclick="|location.href='@{/items/{wishlistItemId}/detail (wishlistItemId=${wishlistItem.id})}'|">
+                <img th:src="|/items/images/${wishlistItem.uploadImages.get(0).savedFilename}|"
+                     width="200px" height="200px" style="border-color: black; border-style: solid; border-width: thin;"/>
+                <div th:text="${wishlistItem.name}"></div>
+            </div>
+        </div>
+    </div>
+    <ul id="paging-ul" class="pagination justify-content-center"></ul>
+</div>
+
+<script th:inline="javascript">
+    window.onload = function () {
+        let nowPage = [[${wishlists.getNumber()}]] + 1;    // 현재 페이지
+        let totalPage = [[${wishlists.getTotalPages()}]];  // 전체 페이지 수
+
+        let firstPage;  // 화면에 출력될 첫 페이지
+        for (let i = nowPage ; i >= 1 ; i --) {
+            if(i % 5 == 1) {
+                firstPage = i;
+                break;
+            }
+        }
+
+        let lastPage;   // 화면에 출력될 마지막 페이지
+        let nextButton; // 다음 버튼 출력 여부
+        if (firstPage + 4 >= totalPage) {
+            lastPage = totalPage;
+            nextButton = false;
+        } else {
+            lastPage = firstPage + 4;
+            nextButton = true;
+        }
+
+        // HTML 생성
+        let pageHtml = "";
+        pageHtml += "<li><a class='page-link' href='" + makeUrl(1) +  "'>&laquo;</a></li>";
+        if (firstPage != 1) {
+            pageHtml += "<li><a class='page-link' href='" + makeUrl(firstPage - 1) +  "'>&lsaquo;</a></li>";
+        }
+
+        for (let i = firstPage; i <= lastPage; i++) {
+            if (i == nowPage) {
+                pageHtml += "<li class='page-item active'><a class= 'page-link'>" + i + "</a></li>";
+            } else {
+                pageHtml += "<li class='page-item'><a class= 'page-link' href='" + makeUrl(i) + "'>" + i + "</a></li>";
+            }
+        }
+
+        if (nextButton) {
+            pageHtml += "<li><a class='page-link' href='" + makeUrl(lastPage + 1) +  "'>&rsaquo;</a></li>";
+        }
+        pageHtml += "<li><a class='page-link' href='" + makeUrl(totalPage) +  "'>&raquo;</a></li>";
+
+        $("#paging-ul").html(pageHtml);
+    }
+
+    function makeUrl(page) {
+        let url = "/wishlistItems/" + "?page=" + page;
+
+        // 검색 했으면 다음 URL에도 추가
+        let keyword = [[${keyword}]];
+
+        return url;
+    }
+</script>
+</body>

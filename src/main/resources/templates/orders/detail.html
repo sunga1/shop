@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header.html :: head"/>
+
+<body>
+<div th:replace="fragments/header.html :: header ('')" style="background-color:white;"/>
+
+<div th:replace="fragments/myPageHeader.html :: myPageHeader ('myOrder')"/>
+<h1>주문 내역</h1>
+<div class="row">
+    <table style="width:80%; margin:auto">
+        <thead>
+        <tr>
+            <th class="order-id-col" th:text="${#temporals.format(orderDate, 'yy/MM/dd HH:mm')}" style="width:50px;"></th>
+            <th>상품 이름</th>
+            <th>수량</th>
+            <th>상품 가격</th>
+            <th>총 금액</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- 각 주문에 대한 정보를 반복적으로 표시 -->
+        <tr th:each="orderItemDto : ${orderItemDtoList}">
+            <td class="order-id-col">
+                <img th:src="|/items/images/${orderItemDto.uploadImage.savedFilename}|"
+                     width="50px" height="50px">
+            <td th:text="${orderItemDto.itemName}"></td>
+            <td th:text="${orderItemDto.count}"></td>
+            <td th:text="${orderItemDto.orderPrice}"></td>
+            <td th:text="${orderItemDto.totalPrice}"></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<br/>
+<br/>
+</body>

@@ -18,4 +18,10 @@ public class Address {
         this.streetAddress = streetAddress;
         this.detailAddress = detailAddress;
     }
+
+    public void addressEdit(String zipcode, String streetAddress, String detailAddress) {
+        this.zipcode = zipcode;
+        this.streetAddress = streetAddress;
+        this.detailAddress = detailAddress;
+    }
 }

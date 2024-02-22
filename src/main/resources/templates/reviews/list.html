@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="fragments/header.html :: head" />
+<body>
+<div th:replace="fragments/header.html :: header (${''})"/>
+<div class="row" th:object="${itemDto}">
+    <div th:replace="fragments/itemDetailHeader.html"/>
+</div>
+
+<div class="offset-4 col-4">
+    <hr class="review-top-hr">
+    <div th:each="review, stat: ${reviews}" class="review">
+        <div class="d-flex align-items-center" style="margin-left:20px;" th:onclick="toggleReviewDetails([[${review.id}]])">
+            <span th:text="${stat.index + 1}" style="margin-right:30px;"></span>
+            <div th:text="${review.title}" style="width:340px; text-align:left;"/>
+            <div>
+            <div th:if="${review.member.email==loginUserLoginId}">
+                <button class="btn post-btn" id="review-delete-button" type="button" style="font-size:0.7em;"
+                        th:onclick="'deleteReview(\'' + ${itemDto.id} + '\', \'' + ${review.id} + '\')'">(리뷰 삭제)</button>
+            </div>
+            </div>
+        </div>
+        <div th:id="${review.id}" style="display: none; text-align:left;">
+            <br/>
+            <!-- 필요한 경우 리뷰 내용 등을 표시 -->
+            <div th:text="${review.content}" style="float:left; margin-left:80px; min-height:7px; width:250px; font-size:0.7em" readonly/>
+            <div><span style="font-size:0.7em; margin-left:20px;">평점: </span><span th:text="${review.rating}" style="font-size:0.7em"readonly/></div>
+        </div>
+        <hr class="review-hr"/>
+    </div>
+</div>
+
+<ul id="paging-ul" class="pagination justify-content-center"></ul>
+<div>
+    <div>
+        <button class="btn post-btn" id="review-join-button" type="button"
+                th:onclick="|location.href='@{/reviews/{itemId}/write (itemId=${itemDto.id})}'|">리뷰 등록</button>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    window.onload = function () {
+        let nowPage = [[${reviews.getNumber()}]] + 1;    // 현재 페이지
+        let totalPage = [[${reviews.getTotalPages()}]];  // 전체 페이지 수
+
+        let firstPage;  // 화면에 출력될 첫 페이지
+        for (let i = nowPage ; i >= 1 ; i --) {
+            if(i % 5 == 1) {
+                firstPage = i;
+                break;
+            }
+        }
+
+        let lastPage;   // 화면에 출력될 마지막 페이지
+        let nextButton; // 다음 버튼 출력 여부
+        if (firstPage + 4 >= totalPage) {
+            lastPage = totalPage;
+            nextButton = false;
+        } else {
+            lastPage = firstPage + 4;
+            nextButton = true;
+        }
+
+        // HTML 생성
+        let pageHtml = "";
+        pageHtml += "<li><a class='page-link' href='" + makeUrl(1) +  "'>&laquo;</a></li>";
+        if (firstPage != 1) {
+            pageHtml += "<li><a class='page-link' href='" + makeUrl(firstPage - 1) +  "'>&lsaquo;</a></li>";
+        }
+
+        for (let i = firstPage; i <= lastPage; i++) {
+            if (i == nowPage) {
+                pageHtml += "<li class='page-review active'><a class= 'page-link'>" + i + "</a></li>";
+            } else {
+                pageHtml += "<li class='page-review'><a class= 'page-link' href='" + makeUrl(i) + "'>" + i + "</a></li>";
+            }
+        }
+
+        if (nextButton) {
+            pageHtml += "<li><a class='page-link' href='" + makeUrl(lastPage + 1) +  "'>&rsaquo;</a></li>";
+        }
+        pageHtml += "<li><a class='page-link' href='" + makeUrl(totalPage) +  "'>&raquo;</a></li>";
+
+        $("#paging-ul").html(pageHtml);
+    }
+
+    function makeUrl(page) {
+        let url = "/reviews/" + "?page=" + page;
+
+        return url;
+    }
+    function toggleReviewDetails(reviewId) {
+        var reviewDetails = document.getElementById(reviewId);
+        console.log(reviewId);
+        if (reviewDetails.style.display === 'none') {
+            reviewDetails.style.display = 'inline';
+        } else {
+            reviewDetails.style.display = 'none';
+        }
+    }
+     function deleteReview(itemId, reviewId) {
+        var form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '/reviews/' + itemId + '/' + reviewId + '/delete';
+        document.body.appendChild(form);
+        form.submit();
+    }
+</script>
+</body>
+</html>

@@ -11,7 +11,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 @Getter
-public class wishlist {
+@Table(name = "`LIKE`")
+public class Like {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long Id;
 

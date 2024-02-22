@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import sun0aaa.s.shop.exception.NotEnoughStockException;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -18,12 +19,10 @@ import java.util.Map;
 public class Item {
     @Id @GeneratedValue
     private Long id;
-
     private String name; //상품 이름
-    private String description; //상품 상세설명
     private String sizeTip; //사이즈 설명
     private String itemTip; //상품 설명
-    private String delivery_price; //배송비
+    private Integer delivery_price; //배송비
     private Integer price; //상품 가격
     @Enumerated(EnumType.STRING)
     private ItemCategory itemCategory; //상품 종류
@@ -48,5 +47,12 @@ public class Item {
     }
 
 
+    public Item edit(Integer price,ItemCategory itemCategory,Integer stock ,String itemTip, String sizeTip) {
+        this.price=price;
+        this.itemTip=itemTip;
+        this.sizeTip=sizeTip;
+        this.stockQuantity=stock;
+        return  this;
+    }
 
 }

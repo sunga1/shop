@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<body>
+    <div class="row" th:object="${itemDto}">
+        <div>
+            <div style="margin-left:100px;">
+                <div th:if="${itemDto.uploadImages.get(0) != null}" id="main-image">
+                    <img th:src="|/items/images/${itemDto.uploadImages.get(0).savedFilename}|"
+                         width="310px" height="310px" style="border:2px solid #BB9B7C;"/>
+                </div>
+                <div>
+                    <label th:for="name" style="font-size: small; margin-top:10px; margin-left:-400px; color:#5F4E3A;">상품명 : </label>
+                    <input type="text" th:field="*{name}" style="width:100px; border: none;" readonly>
+                </div>
+                <br/>
+                <div>
+                    <label th:for="price" style="font-size: small; margin-left:-410px;color:#5F4E3A;">상품가격 : </label>
+                    <input type="text" th:field="*{price}" style="width:100px; border: none;" readonly>
+                </div>
+                <br/>
+                <div>
+                    <label th:for="delivery_price" style="font-size: small; margin-left:-398px;color:#5F4E3A;">배송비 : </label>
+                    <input type="text" th:field="*{delivery_price}" style="width:100px; border: none;" readonly>
+                </div>
+                <br/>
+                <div>
+                    <label th:for="sizeTip" style="font-size: small; margin-left:-390px;color:#5F4E3A;">size : </label>
+                    <input type="text" th:field="*{sizeTip}" style="width:100px; border: none;" readonly>
+                </div>
+                <br/>
+                <div>
+                    <label id="countLabel" style="font-size: small; margin-left:-390px;color:#5F4E3A;">수량 : </label>
+                    <input type="text" id="countInput" value="1" style="width:100px; border-color:white;">
+                </div>
+                <br/>
+                <div sec:authorize="isAuthenticated()">
+                    <div>
+                        <!-- order 버튼 -->
+                        <form id="orderForm" th:action="@{/orders/create}" method="post" style="display: inline-block;">
+                            <input type="hidden" id="itemId" name="itemId" th:value="${itemDto.id}"/>
+                            <input type="hidden" id="count" name="count" />
+                            <button type="submit" class="btn order-btn1">order</button>
+                        </form>
+                        <form id="cartForm" th:action="@{/carts/create}" method="post" style="display: inline-block;">
+                            <input type="hidden" id="itemId1" name="itemId1" th:value="${itemDto.id}"/>
+                            <input type="hidden" id="count1" name="count1" />
+                            <button type="submit" class="btn cart-btn1">cart</button>
+                        </form>
+                        <span th:if="${likeCheck == false}"style="display: inline-block;">
+                            <button class="btn wish-btn1" type="button"
+                                    th:onclick="|location.href='@{/likes/create/{itemId} (itemId=${itemDto.id})}'|">
+                                wishlist
+                            </button>
+                        </span>
+                        <span th:unless="${likeCheck == false}"style="display: inline-block;">
+                            <button class="btn wish-btn-check" type="button"
+                                    th:onclick="|location.href='@{/likes/delete/{itemId} (itemId=${itemDto.id})}'|">
+                                wishlist
+                            </button>
+                        </span>
+                    </div>
+                </div>
+
+                <div sec:authorize="isAnonymous()">
+                    <!-- 로그인이 필요한 경우 -->
+                    <div>
+                        <button class="btn order-btn" type="button" onclick="askLogin()">order</button>
+                        <button class="btn cart-btn" type="button" onclick="askLogin()">cart</button>
+                        <button class="btn wish-btn" type="button" onclick="askLogin()">wishlist</button>
+                    </div>
+                </div>
+            <br/>
+            <br/>
+            <br/>
+        </div>
+    </div>
+    </div>
+    <div class="detail-nav-bar">
+        <ul>
+            <li style="list-style-type: none;">
+                <a th:onclick="|location.href='@{/items/{itemId}/detail (itemId=${itemDto.id})}'|" class="detail-a">detail</a>
+                <a th:onclick="|location.href='@{/reviews/{itemId} (itemId=${itemDto.id})}'|" class="detail-a">review</a>
+                <a th:onclick="|location.href='@{/qna/{itemId} (itemId=${itemDto.id})}'|" class="detail-a">Q&A</a>
+            </li>
+        </ul>
+    </div>
+<script>
+    function askLogin() {
+        if (confirm("로그인이 필요한 작업입니다.\n로그인 하시겠습니까?") == true) {
+            location.href = "/members/login";
+        }
+    }
+    document.getElementById("orderForm").addEventListener("submit", function(event) {
+        var countInputValue = document.getElementById("countInput").value;
+        document.getElementById("count").value = countInputValue;
+    });
+     document.getElementById("cartForm").addEventListener("submit", function(event) {
+        var countInputValue = document.getElementById("countInput").value;
+        document.getElementById("count1").value = countInputValue;
+    });
+</script>
+</body>
+</html>

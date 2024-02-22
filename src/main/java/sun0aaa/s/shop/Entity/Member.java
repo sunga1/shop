@@ -26,13 +26,13 @@ public class Member {
 
     private String password; //비밀번호
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     private Delivery delivery; //주소
 
     @Enumerated(EnumType.STRING)
     private Membership membership; //권한
 
-    @OneToMany(mappedBy = "member",orphanRemoval = true)
+    @OneToMany(mappedBy = "member",orphanRemoval = true,cascade = CascadeType.ALL)
     private List<Order> orders; //주문목록
 
     @OneToMany(mappedBy = "member",orphanRemoval = true)
@@ -42,15 +42,18 @@ public class Member {
     private List<Review> reviews;//작성한 리뷰 목록
 
     @OneToMany(mappedBy = "member",orphanRemoval = true)
-    private List<wishlist> wishItems; //위시리스트
+    private List<Like> likes; //위시리스트
 
     @OneToMany(mappedBy = "member",orphanRemoval = true)
     private List<Cart> cartItems; //장바구니목록
 
     //회원수정
-    public void edit(String newPassword,String name, Delivery delivery){
+    public void edit(String newPassword,String name){
         this.password=newPassword;
         this.name=name;
-        this.delivery=delivery;
+    }
+
+    public void deliveryCreate(Delivery newDelivery){
+        this.delivery=newDelivery;
     }
 }

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="fragments/header.html :: head" />
+<body>
+<div th:replace="fragments/header.html :: header (${''})"/>
+<div class="row" th:object="${itemDto}">
+    <div th:if="${itemDto.uploadImages.get(0) != null}">
+        <img th:src="|/items/images/${itemDto.uploadImages.get(0).savedFilename}|"
+             width="50px" height="50px" style="border:1px solid white; margin-left:-500px;"/>
+            <input type="text" th:field="*{name}" style="width:100px; border: none;" readonly>
+
+    </div>
+</div>
+<br>
+<div class="container-write">
+<form class="offset-3 col-6 form-group item-form" th:method="post"
+      th:action="@{/reviews/{itemId}/write (itemId=${itemDto.id})}" th:object="${reviewJoinRequest}" enctype="multipart/form-data">
+    <h3 align="center" style="color:#5F4E3A">리뷰등록</h3><br>
+    <table border="1">
+        <tr>
+        <td><label th:for="title">제목: </label></td>
+        <td><input type="text" th:field="*{title}" style="width:600px;"></td>
+        </tr>
+        <div th:class="error-div" th:errors="*{title}"/>
+        <tr>
+            <td><label th:for="content">본문: </label></td>
+            <td><textarea rows="10" cols="50" th:field="*{content}" style="width:600px;"></textarea></td>
+        </tr>
+        <tr>
+            <td><label th:for="uploadImage">이미지 첨부:</label></td>
+            <td align="left"><input type="file" id="imageInput" th:field="*{uploadImage}"></td>
+        </tr>
+
+    </table>
+    <br/>
+    <div id="star-div">
+        <fieldset>
+            <span class="text-bold"> (별점을 선택해주세요)</span>
+            <input type="radio" th:field="*{rating}" name="reviewStar" value="5" id="rate1"><label
+                for="rate1">★</label>
+            <input type="radio" th:field="*{rating}" name="reviewStar" value="4" id="rate2"><label
+                for="rate2">★</label>
+            <input type="radio" th:field="*{rating}" name="reviewStar" value="3" id="rate3"><label
+                for="rate3">★</label>
+            <input type="radio" th:field="*{rating}" name="reviewStar" value="2" id="rate4"><label
+                for="rate4">★</label>
+            <input type="radio" th:field="*{rating}" name="reviewStar" value="1" id="rate5"><label
+                for="rate5">★</label>
+        </fieldset></div>
+    <br>
+    <div>
+        <button id="submitButton" class="btn item-btn" type="submit">등록</button>
+    </div>
+</form></div>
+
+</body>
+</html>
